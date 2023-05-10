@@ -41,7 +41,7 @@
 <hr>
 <!-- 다이어리 수정을 위한 폼 생성 -->
 <h2>Edit the diary</h2>
-<form method="post" th:action="@{/diaries/__${diary.id}__}">
+<form method="post" th:action="@{/diaries/__${diary.id}__}" enctype="multipart/form-data">
     <div>
         <label for="title">Title:</label>
         <input id="title" name="title" th:value="${diary.title}" type="text">
@@ -52,11 +52,11 @@
     </div>
     <div>
         <label for="image">Image:</label>
-        <input id="image" name="image" th:value="${diary.image}" type="text">
+        <input id="image" name="image" th:value="${diary.image}" type="file">
     </div>
     <div>
         <label for="sound">Sound:</label>
-        <input id="sound" name="sound" th:value="${diary.sound}" type="text">
+        <input id="sound" name="sound" th:value="${diary.sound}" type="file">
     </div>
     <button type="submit">Save</button>
 </form>

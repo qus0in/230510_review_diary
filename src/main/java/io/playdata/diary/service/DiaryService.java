@@ -3,9 +3,13 @@ package io.playdata.diary.service;
 import io.playdata.diary.model.Diary;
 import io.playdata.diary.repository.DiaryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -70,8 +74,30 @@ public class DiaryService {
         diary.setContent(newDiary.getContent());
         diary.setImage(newDiary.getImage());
         diary.setSound(newDiary.getSound());
-//        diary.setCreateAt(newDiary.getCreateAt());
-        diary.setCreateAt(diary.getCreateAt());
+        return diaryRepository.save(diary);
+    }
+
+    @Value("${upload.path}")
+    private String uploadPath;
+
+    public Diary createDiary(Diary diary, MultipartFile imageFile, MultipartFile soundFile) throws IOException {
+        if (imageFile != null) {
+            // 새로운 파일 이름 - 파일이 겹칠 수 있으니까
+            String newFileName = System.currentTimeMillis() + "-" + imageFile.getOriginalFilename();
+            // 업로드를 받을 폴더 이름 -> 새로운 파일이 들어갈 최종 경로
+            File file = new File(uploadPath + "/" + newFileName);
+            imageFile.transferTo(file); // 파일 전송
+            diary.setImage(newFileName); // db에 저장하기 위한 새로운 파일 이름
+        }
+        if (soundFile != null) {
+            // 새로운 파일 이름 - 파일이 겹칠 수 있으니까
+            String newFileName = System.currentTimeMillis() + "-" + soundFile.getOriginalFilename();
+            // 업로드를 받을 폴더 이름 -> 새로운 파일이 들어갈 최종 경로
+            File file = new File(uploadPath + "/" + newFileName);
+            soundFile.transferTo(file); // 파일 전송
+            diary.setSound(newFileName); // db에 저장하기 위한 새로운 파일 이름
+        }
+        diary.setCreateAt(LocalDateTime.now()); // 생성시의 시간 입력
         return diaryRepository.save(diary);
     }
 }

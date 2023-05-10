@@ -5,11 +5,10 @@ import io.playdata.diary.service.DiaryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @Controller
@@ -38,9 +37,19 @@ public class DiaryController {
      * @param diary 생성할 다이어리의 정보
      * @return 다이어리 목록 페이지
      */
+
+//    @PostMapping
+//    public String createDiary(Diary diary) {
+//        diaryService.createDiary(diary);
+//        return "redirect:/diaries";
+//    }
     @PostMapping
-    public String createDiary(Diary diary) {
-        diaryService.createDiary(diary);
+    public String createDiary(
+            @ModelAttribute("diary") Diary diary,
+            @RequestParam("imageFile") MultipartFile imageFile,
+            @RequestParam("soundFile") MultipartFile soundFile) throws IOException {
+//        diaryService.createDiary(diary);
+        diaryService.createDiary(diary, imageFile, soundFile);
         return "redirect:/diaries";
     }
 
