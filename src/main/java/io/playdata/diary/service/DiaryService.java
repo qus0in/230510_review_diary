@@ -7,6 +7,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.File;
 import java.io.IOException;
@@ -77,24 +81,39 @@ public class DiaryService {
         return diaryRepository.save(diary);
     }
 
-    @Value("${upload.path}")
-    private String uploadPath;
+//    @Value("${upload.path}")
+//    private String uploadPath;
+
+    @Autowired
+    private S3Client s3Client; // @Bean
 
     public Diary createDiary(Diary diary, MultipartFile imageFile, MultipartFile soundFile) throws IOException {
+        String bucketName = "test";
         if (imageFile != null) {
             // 새로운 파일 이름 - 파일이 겹칠 수 있으니까
             String newFileName = System.currentTimeMillis() + "-" + imageFile.getOriginalFilename();
             // 업로드를 받을 폴더 이름 -> 새로운 파일이 들어갈 최종 경로
-            File file = new File(uploadPath + "/" + newFileName);
-            imageFile.transferTo(file); // 파일 전송
+//            File file = new File(uploadPath + "/" + newFileName);
+//            imageFile.transferTo(file); // 파일 전송
+            // S3(R2)로 전달
+            PutObjectRequest request = PutObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(newFileName)
+                    .build();
+            s3Client.putObject(request, RequestBody.fromBytes(imageFile.getBytes()));
             diary.setImage(newFileName); // db에 저장하기 위한 새로운 파일 이름
         }
         if (soundFile != null) {
             // 새로운 파일 이름 - 파일이 겹칠 수 있으니까
             String newFileName = System.currentTimeMillis() + "-" + soundFile.getOriginalFilename();
             // 업로드를 받을 폴더 이름 -> 새로운 파일이 들어갈 최종 경로
-            File file = new File(uploadPath + "/" + newFileName);
-            soundFile.transferTo(file); // 파일 전송
+//            File file = new File(uploadPath + "/" + newFileName);
+//            soundFile.transferTo(file); // 파일 전송
+            PutObjectRequest request = PutObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(newFileName)
+                    .build();
+            s3Client.putObject(request, RequestBody.fromBytes(soundFile.getBytes()));
             diary.setSound(newFileName); // db에 저장하기 위한 새로운 파일 이름
         }
 //        diary.setCreateAt(LocalDateTime.now()); // 생성시의 시간 입력
@@ -111,22 +130,44 @@ public class DiaryService {
         }
         diary.setTitle(newDiary.getTitle());
         diary.setContent(newDiary.getContent());
+        String bucketName = "test";
         if (imageFile != null) {
             // 새로운 파일 이름 - 파일이 겹칠 수 있으니까
             String newFileName = System.currentTimeMillis() + "-" + imageFile.getOriginalFilename();
             // 업로드를 받을 폴더 이름 -> 새로운 파일이 들어갈 최종 경로
-            File file = new File(uploadPath + "/" + newFileName);
-            imageFile.transferTo(file); // 파일 전송
+//            File file = new File(uploadPath + "/" + newFileName);
+//            imageFile.transferTo(file); // 파일 전송
+            // S3(R2)로 전달
+            PutObjectRequest request = PutObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(newFileName)
+                    .build();
+            s3Client.putObject(request, RequestBody.fromBytes(imageFile.getBytes()));
             diary.setImage(newFileName); // db에 저장하기 위한 새로운 파일 이름
         }
         if (soundFile != null) {
             // 새로운 파일 이름 - 파일이 겹칠 수 있으니까
             String newFileName = System.currentTimeMillis() + "-" + soundFile.getOriginalFilename();
             // 업로드를 받을 폴더 이름 -> 새로운 파일이 들어갈 최종 경로
-            File file = new File(uploadPath + "/" + newFileName);
-            soundFile.transferTo(file); // 파일 전송
+//            File file = new File(uploadPath + "/" + newFileName);
+//            soundFile.transferTo(file); // 파일 전송
+            PutObjectRequest request = PutObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(newFileName)
+                    .build();
+            s3Client.putObject(request, RequestBody.fromBytes(soundFile.getBytes()));
             diary.setSound(newFileName); // db에 저장하기 위한 새로운 파일 이름
         }
         return diaryRepository.save(diary);
+    }
+
+    public byte[] loadFile(String key) throws IOException {
+        String bucketName = "test";
+        GetObjectRequest request = GetObjectRequest.builder()
+                .bucket(bucketName)
+                .key(key)
+                .build();
+
+        return s3Client.getObject(request).readAllBytes();
     }
 }

@@ -124,13 +124,15 @@ public class DiaryController {
         return "redirect:/";
     }
 
-    @Value("${upload.path}")
-    private String uploadPath;
+//    @Value("${upload.path}")
+//    private String uploadPath;
 
     @GetMapping("/upload/{filename}") // {@PathVariable}
     public ResponseEntity upload(@PathVariable String filename) throws IOException {
-        Path filePath = Path.of(uploadPath + "/" + filename); // 경로를 지정
-        byte[] byteArray = Files.readAllBytes(filePath);
+//        Path filePath = Path.of(uploadPath + "/" + filename); // 경로를 잡아준다음에
+        // 경로에서 바이트 그대로 읽어올 것임
+//        byte[] byteArray = Files.readAllBytes(filePath);
+        byte[] byteArray = diaryService.loadFile(filename);
         return new ResponseEntity<>(byteArray, HttpStatus.OK);
     }
 }
