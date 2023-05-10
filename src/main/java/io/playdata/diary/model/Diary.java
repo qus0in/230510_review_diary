@@ -5,6 +5,7 @@ import lombok.Data;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.PrePersist;
 import java.time.LocalDateTime;
 
 // model, VO, DTO
@@ -21,4 +22,9 @@ public class Diary {
     private String image; // 파일 -> 별도의 스토리지(창고)에 업로드 되어야함 -> 업로드된 경로 또는 파일 이름
     private String sound; // 파일 -> ...
     private LocalDateTime createAt; // 생성 당시의 시간을 기록
+
+    @PrePersist
+    public void prePersist() {
+        this.createAt = LocalDateTime.now();
+    }
 }

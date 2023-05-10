@@ -3,12 +3,17 @@ package io.playdata.diary.controller;
 import io.playdata.diary.model.Diary;
 import io.playdata.diary.service.DiaryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 @Controller
@@ -89,17 +94,43 @@ public class DiaryController {
      * @param newDiary 변경할 다이어리의 정보
      * @return 다이어리 목록 페이지
      */
+//    @PostMapping("/{id}")
+//    public String updateDiary(@PathVariable Long id, Diary newDiary) {
+//        Diary diary = diaryService.getDiary(id);
+//        if (diary != null) {
+//            diary.setTitle(newDiary.getTitle());
+//            diary.setContent(newDiary.getContent());
+//            diary.setImage(newDiary.getImage());
+//            diary.setSound(newDiary.getSound());
+//            diaryService.updateDiary(id, diary);
+//        }
+//        return "redirect:/diaries";
+//    }
+
     @PostMapping("/{id}")
-    public String updateDiary(@PathVariable Long id, Diary newDiary) {
+    public String updateDiary(@PathVariable Long id,
+                              @ModelAttribute("diary") Diary newDiary,
+                              @RequestParam("imageFile") MultipartFile imageFile,
+                              @RequestParam("soundFile") MultipartFile soundFile) throws IOException {
         Diary diary = diaryService.getDiary(id);
         if (diary != null) {
             diary.setTitle(newDiary.getTitle());
             diary.setContent(newDiary.getContent());
-            diary.setImage(newDiary.getImage());
-            diary.setSound(newDiary.getSound());
-            diary.setCreateAt(newDiary.getCreateAt());
-            diaryService.updateDiary(id, diary);
+//            diary.setImage(newDiary.getImage());
+//            diary.setSound(newDiary.getSound());
+//            diary.setCreateAt(newDiary.getCreateAt());
+            diaryService.updateDiary(id, diary, imageFile, soundFile);
         }
         return "redirect:/diaries";
+    }
+
+    @Value("${upload.path}")
+    private String uploadPath;
+
+    @GetMapping("/upload/{filename}") // {@PathVariable}
+    public ResponseEntity upload(@PathVariable String filename) throws IOException {
+        Path filePath = Path.of(uploadPath + "/" + filename); // 경로를 지정
+        byte[] byteArray = Files.readAllBytes(filePath);
+        return new ResponseEntity<>(byteArray, HttpStatus.OK);
     }
 }

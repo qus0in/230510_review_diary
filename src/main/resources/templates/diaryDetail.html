@@ -22,13 +22,13 @@
     <tr>
         <th>Image</th>
         <!-- 이미지 파일은 별도의 URL 경로로 출력한다. -->
-        <td><img height="200px" th:src="${diary.image}" width="200px"/></td>
+        <td><img height="200px" th:src="@{'/upload/'+${diary.image}}" width="200px"/></td>
     </tr>
     <tr>
         <th>Sound</th>
         <!-- 사운드 파일은 별도의 URL 경로로 출력한다. -->
         <td>
-            <audio controls="controls" th:src="${diary.sound}">
+            <audio controls="controls" th:src="@{'/upload/'+${diary.sound}}">
                 Your browser does not support the audio element.
             </audio>
         </td>
@@ -52,11 +52,11 @@
     </div>
     <div>
         <label for="image">Image:</label>
-        <input id="image" name="image" th:value="${diary.image}" type="file">
+        <input id="image" name="imageFile" th:value="${diary.image}" type="file">
     </div>
     <div>
         <label for="sound">Sound:</label>
-        <input id="sound" name="sound" th:value="${diary.sound}" type="file">
+        <input id="sound" name="soundFile" th:value="${diary.sound}" type="file">
     </div>
     <button type="submit">Save</button>
 </form>

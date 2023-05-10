@@ -26,7 +26,7 @@ public class DiaryService {
      * @return 생성된 다이어리
      */
     public Diary createDiary(Diary diary) {
-        diary.setCreateAt(LocalDateTime.now()); // 생성시의 시간 입력
+//        diary.setCreateAt(LocalDateTime.now()); // 생성시의 시간 입력
         return diaryRepository.save(diary);
     }
 
@@ -97,7 +97,36 @@ public class DiaryService {
             soundFile.transferTo(file); // 파일 전송
             diary.setSound(newFileName); // db에 저장하기 위한 새로운 파일 이름
         }
-        diary.setCreateAt(LocalDateTime.now()); // 생성시의 시간 입력
+//        diary.setCreateAt(LocalDateTime.now()); // 생성시의 시간 입력
+        return diaryRepository.save(diary);
+    }
+
+    public Diary updateDiary(Long id,
+                             Diary newDiary,
+                             MultipartFile imageFile,
+                             MultipartFile soundFile) throws IOException {
+        Diary diary = diaryRepository.findById(id).orElse(null);
+        if (diary == null) {
+            return null;
+        }
+        diary.setTitle(newDiary.getTitle());
+        diary.setContent(newDiary.getContent());
+        if (imageFile != null) {
+            // 새로운 파일 이름 - 파일이 겹칠 수 있으니까
+            String newFileName = System.currentTimeMillis() + "-" + imageFile.getOriginalFilename();
+            // 업로드를 받을 폴더 이름 -> 새로운 파일이 들어갈 최종 경로
+            File file = new File(uploadPath + "/" + newFileName);
+            imageFile.transferTo(file); // 파일 전송
+            diary.setImage(newFileName); // db에 저장하기 위한 새로운 파일 이름
+        }
+        if (soundFile != null) {
+            // 새로운 파일 이름 - 파일이 겹칠 수 있으니까
+            String newFileName = System.currentTimeMillis() + "-" + soundFile.getOriginalFilename();
+            // 업로드를 받을 폴더 이름 -> 새로운 파일이 들어갈 최종 경로
+            File file = new File(uploadPath + "/" + newFileName);
+            soundFile.transferTo(file); // 파일 전송
+            diary.setSound(newFileName); // db에 저장하기 위한 새로운 파일 이름
+        }
         return diaryRepository.save(diary);
     }
 }
