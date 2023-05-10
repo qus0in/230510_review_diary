@@ -41,7 +41,7 @@
 <hr>
 <!-- 다이어리 수정을 위한 폼 생성 -->
 <h2>Edit the diary</h2>
-<form method="post" th:action="@{/diaries/__${diary.id}__}" enctype="multipart/form-data">
+<form method="post" th:action="@{/__${diary.id}__}" enctype="multipart/form-data">
     <div>
         <label for="title">Title:</label>
         <input id="title" name="title" th:value="${diary.title}" type="text">

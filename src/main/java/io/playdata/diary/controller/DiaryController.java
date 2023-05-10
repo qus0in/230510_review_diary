@@ -17,8 +17,8 @@ import java.nio.file.Path;
 import java.util.List;
 
 @Controller
-// localhost:9080/diaries
-@RequestMapping("/diaries") // 특정한 컨트롤러를 특정한 경로에 연결
+// localhost:9080/
+@RequestMapping("/") // 특정한 컨트롤러를 특정한 경로에 연결
 public class DiaryController {
     @Autowired
     private DiaryService diaryService;
@@ -55,7 +55,7 @@ public class DiaryController {
             @RequestParam("soundFile") MultipartFile soundFile) throws IOException {
 //        diaryService.createDiary(diary);
         diaryService.createDiary(diary, imageFile, soundFile);
-        return "redirect:/diaries";
+        return "redirect:/";
     }
 
     /**
@@ -67,7 +67,7 @@ public class DiaryController {
     @GetMapping("/{id}/delete")
     public String deleteDiary(@PathVariable Long id) {
         diaryService.deleteDiary(id);
-        return "redirect:/diaries";
+        return "redirect:/";
     }
 
     /**
@@ -81,7 +81,7 @@ public class DiaryController {
     public String getDiary(@PathVariable Long id, Model model) {
         Diary diary = diaryService.getDiary(id);
         if (diary == null) {
-            return "redirect:/diaries";
+            return "redirect:/";
         }
         model.addAttribute("diary", diary);
         return "diaryDetail";
@@ -121,7 +121,7 @@ public class DiaryController {
 //            diary.setCreateAt(newDiary.getCreateAt());
             diaryService.updateDiary(id, diary, imageFile, soundFile);
         }
-        return "redirect:/diaries";
+        return "redirect:/";
     }
 
     @Value("${upload.path}")
